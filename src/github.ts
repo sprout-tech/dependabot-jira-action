@@ -24,7 +24,7 @@ export async function getDependabotPullRequests(
   const octokit = getOctokit(githubApiKey)
   const dependabotLoginName = 'dependabot[bot]'
   core.debug(`githubApiKey ${githubApiKey}`)
-  const pulls: unknown = await octokit.request(
+  const {data} = await octokit.request(
     'GET /repos/{owner}/{repo}/pulls?state=open',
     {
       owner,
@@ -34,11 +34,9 @@ export async function getDependabotPullRequests(
       }
     }
   )
-  core.debug(`pulls ${JSON.stringify(pulls)}`)
+  core.debug(`pulls ${JSON.stringify(data)}`)
   const items = []
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  for (const pull of pulls) {
+  for (const pull of data) {
     if (pull?.user?.login === dependabotLoginName) {
       const item: PullRequestInfo = {
         url: pull.html_url,

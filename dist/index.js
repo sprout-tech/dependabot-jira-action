@@ -51,18 +51,16 @@ function getDependabotPullRequests(params) {
         const octokit = (0, github_1.getOctokit)(githubApiKey);
         const dependabotLoginName = 'dependabot[bot]';
         core.debug(`githubApiKey ${githubApiKey}`);
-        const pulls = yield octokit.request('GET /repos/{owner}/{repo}/pulls?state=open', {
+        const { data } = yield octokit.request('GET /repos/{owner}/{repo}/pulls?state=open', {
             owner,
             repo,
             headers: {
                 'X-GitHub-Api-Version': '2022-11-28'
             }
         });
-        core.debug(`pulls ${JSON.stringify(pulls)}`);
+        core.debug(`pulls ${JSON.stringify(data)}`);
         const items = [];
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        for (const pull of pulls) {
+        for (const pull of data) {
             if (((_a = pull === null || pull === void 0 ? void 0 : pull.user) === null || _a === void 0 ? void 0 : _a.login) === dependabotLoginName) {
                 const item = {
                     url: pull.html_url,
