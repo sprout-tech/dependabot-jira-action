@@ -1,4 +1,5 @@
 import {getOctokit} from '@actions/github'
+import * as core from '@actions/core'
 
 export interface GetPullRequestParams {
   owner: string
@@ -21,6 +22,7 @@ export async function getDependabotPullRequests(
   const githubApiKey = process.env.GITHUB_API_TOKEN || ''
   const octokit = getOctokit(githubApiKey)
   const dependabotLoginName = 'dependabot[bot]'
+  core.debug(`githubApiKey ${githubApiKey}`)
   const pulls: unknown = await octokit.request(
     'GET /repos/{owner}/{repo}/pulls?state=open',
     {
@@ -31,6 +33,7 @@ export async function getDependabotPullRequests(
       }
     }
   )
+  core.debug(`pulls ${pulls}`)
   const items = []
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
