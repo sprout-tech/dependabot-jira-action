@@ -16,7 +16,7 @@ async function run(): Promise<void> {
     core.debug(`label ${label}`)
     core.debug(`projectKey ${projectKey}`)
     core.debug(`issueType ${issueType}`)
-
+    core.debug(`here`)
     const dependabotPulls: PullRequestInfo[] = await getDependabotPullRequests({
       repo,
       owner
@@ -35,7 +35,10 @@ async function run(): Promise<void> {
       new Date().toTimeString()
     )
   } catch (error) {
-    if (error instanceof Error) core.setFailed(error.message)
+    if (error instanceof Error) {
+      core.debug(error.message)
+      core.setFailed(error.message)
+    }
   }
 }
 
