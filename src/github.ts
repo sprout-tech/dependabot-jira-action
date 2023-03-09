@@ -18,6 +18,7 @@ export interface PullRequestInfo {
 export async function getDependabotPullRequests(
   params: GetPullRequestParams
 ): Promise<PullRequestInfo[]> {
+  core.debug(`getDependabotPullRequests start`)
   const {owner, repo} = params
   const githubApiKey = process.env.GITHUB_API_TOKEN || ''
   const octokit = getOctokit(githubApiKey)
