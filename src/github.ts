@@ -1,5 +1,4 @@
 import {getOctokit} from '@actions/github'
-import * as core from '@actions/core'
 
 export interface GetPullRequestParams {
   owner: string
@@ -18,12 +17,10 @@ export interface PullRequestInfo {
 export async function getDependabotPullRequests(
   params: GetPullRequestParams
 ): Promise<PullRequestInfo[]> {
-  core.debug(`getDependabotPullRequests start`)
   const {owner, repo} = params
   const githubApiKey = process.env.GITHUB_API_TOKEN || ''
   const octokit = getOctokit(githubApiKey)
   const dependabotLoginName = 'dependabot[bot]'
-  core.debug(`githubApiKey ${githubApiKey}`)
   const {data} = await octokit.request(
     'GET /repos/{owner}/{repo}/pulls?state=open',
     {
@@ -34,7 +31,6 @@ export async function getDependabotPullRequests(
       }
     }
   )
-  core.debug(`pulls ${JSON.stringify(data)}`)
   const items = []
   for (const pull of data) {
     if (pull?.user?.login === dependabotLoginName) {
