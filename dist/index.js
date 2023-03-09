@@ -6,29 +6,6 @@ require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -41,16 +18,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getDependabotPullRequests = void 0;
 const github_1 = __nccwpck_require__(5438);
-const core = __importStar(__nccwpck_require__(2186));
 function getDependabotPullRequests(params) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
-        core.debug(`getDependabotPullRequests start`);
         const { owner, repo } = params;
         const githubApiKey = process.env.GITHUB_API_TOKEN || '';
         const octokit = (0, github_1.getOctokit)(githubApiKey);
         const dependabotLoginName = 'dependabot[bot]';
-        core.debug(`githubApiKey ${githubApiKey}`);
         const { data } = yield octokit.request('GET /repos/{owner}/{repo}/pulls?state=open', {
             owner,
             repo,
@@ -58,7 +32,6 @@ function getDependabotPullRequests(params) {
                 'X-GitHub-Api-Version': '2022-11-28'
             }
         });
-        core.debug(`pulls ${JSON.stringify(data)}`);
         const items = [];
         for (const pull of data) {
             if (((_a = pull === null || pull === void 0 ? void 0 : pull.user) === null || _a === void 0 ? void 0 : _a.login) === dependabotLoginName) {
@@ -345,15 +318,10 @@ function run() {
             const issueType = core.getInput('jiraIssueType');
             const repo = core.getInput('githubRepo');
             const owner = core.getInput('githubOwner');
-            core.debug(`label ${label}`);
-            core.debug(`projectKey ${projectKey}`);
-            core.debug(`issueType ${issueType}`);
-            core.debug(`here`);
             const dependabotPulls = yield (0, github_1.getDependabotPullRequests)({
                 repo,
                 owner
             });
-            core.debug(`response ${dependabotPulls}`);
             for (const pull of dependabotPulls) {
                 yield (0, jira_1.createJiraIssue)(Object.assign({ label,
                     projectKey,

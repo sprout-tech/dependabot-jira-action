@@ -13,15 +13,11 @@ async function run(): Promise<void> {
     const issueType: string = core.getInput('jiraIssueType')
     const repo: string = core.getInput('githubRepo')
     const owner: string = core.getInput('githubOwner')
-    core.debug(`label ${label}`)
-    core.debug(`projectKey ${projectKey}`)
-    core.debug(`issueType ${issueType}`)
-    core.debug(`here`)
+
     const dependabotPulls: PullRequestInfo[] = await getDependabotPullRequests({
       repo,
       owner
     })
-    core.debug(`response ${dependabotPulls}`)
     for (const pull of dependabotPulls) {
       await createJiraIssue({
         label,
