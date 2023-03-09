@@ -21,8 +21,9 @@ const github_1 = __nccwpck_require__(5438);
 function getDependabotPullRequests(params) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
-        const { apiToken, owner, repo } = params;
-        const octokit = (0, github_1.getOctokit)(apiToken);
+        const { owner, repo } = params;
+        const githubApiKey = process.env.GITHUB_API_TOKEN || '';
+        const octokit = (0, github_1.getOctokit)(githubApiKey);
         const dependabotLoginName = 'dependabot[bot]';
         const pulls = yield octokit.request('GET /repos/{owner}/{repo}/pulls?state=open', {
             owner,
@@ -310,17 +311,15 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             core.setOutput('Start dependabot jira issue creation', new Date().toTimeString());
-            const label = core.getInput('label');
-            const projectKey = core.getInput('projectKey');
-            const issueType = core.getInput('issueType');
+            const label = core.getInput('jiraIssueLabel');
+            const projectKey = core.getInput('jiraProjectKey');
+            const issueType = core.getInput('jiraIssueType');
             const repo = core.getInput('githubRepo');
             const owner = core.getInput('githubOwner');
-            const apiToken = core.getInput('githubToken');
             core.debug(`label ${label}`);
             core.debug(`projectKey ${projectKey}`);
             core.debug(`issueType ${issueType}`);
             const dependabotPulls = yield (0, github_1.getDependabotPullRequests)({
-                apiToken,
                 repo,
                 owner
             });

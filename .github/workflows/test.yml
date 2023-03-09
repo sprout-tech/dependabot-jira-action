@@ -28,7 +28,7 @@ jobs:
           jiraIssueType: Bug
           githubRepo: dependabot-jira-action
           githubOwner: sprout-tech
-        environment:
+        env:
           JIRA_SUBDOMAIN: ${{ env.JIRA_SUBDOMAIN }}
           JIRA_USER_EMAIL: ${{ env.JIRA_USER_EMAIL }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
