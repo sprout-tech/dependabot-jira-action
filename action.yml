@@ -1,11 +1,18 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Dependabot JIRA Action'
+description: 'Creates JIRA issues from dependabot alerts'
+author: 'Sprout Tech LLC'
 inputs:
-  milliseconds: # change this
+  label:
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'JIRA issue labels'
+    default: "dependabot"
+  projectKey:
+    required: true
+    description: 'JIRA issue project key'
+  issueType:
+    required: true
+    description: 'JIRA issue type'
+    default: "Bug"
 runs:
-  using: 'node16'
+  using: 'node18'
   main: 'dist/index.js'
