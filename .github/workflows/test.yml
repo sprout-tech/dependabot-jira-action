@@ -17,8 +17,20 @@ jobs:
           npm run all
   test: # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
     steps:
       - uses: actions/checkout@v2
       - uses: ./
         with:
-          milliseconds: 1000
+          jiraIssueLabel: dependabot
+          jiraProjectKey: TGA
+          jiraIssueType: Bug
+          githubRepo: dependabot-jira-action
+          githubOwner: sprout-tech
+        environment:
+          JIRA_SUBDOMAIN: ${{ env.JIRA_SUBDOMAIN }}
+          JIRA_USER_EMAIL: ${{ env.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

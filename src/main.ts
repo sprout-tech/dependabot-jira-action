@@ -8,18 +8,16 @@ async function run(): Promise<void> {
       'Start dependabot jira issue creation',
       new Date().toTimeString()
     )
-    const label: string = core.getInput('label')
-    const projectKey: string = core.getInput('projectKey')
-    const issueType: string = core.getInput('issueType')
+    const label: string = core.getInput('jiraIssueLabel')
+    const projectKey: string = core.getInput('jiraProjectKey')
+    const issueType: string = core.getInput('jiraIssueType')
     const repo: string = core.getInput('githubRepo')
     const owner: string = core.getInput('githubOwner')
-    const apiToken: string = core.getInput('githubToken')
     core.debug(`label ${label}`)
     core.debug(`projectKey ${projectKey}`)
     core.debug(`issueType ${issueType}`)
 
     const dependabotPulls: PullRequestInfo[] = await getDependabotPullRequests({
-      apiToken,
       repo,
       owner
     })
