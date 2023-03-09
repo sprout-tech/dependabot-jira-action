@@ -34,6 +34,7 @@ export interface CreateIssue {
 function getJiraAuthorizedHeader(): HeaderInit {
   const email = process.env.JIRA_USER_EMAIL
   const token = process.env.JIRA_API_TOKEN
+  core.info(`email ${email}`)
   const authorization = Buffer.from(`${email}:${token}`).toString('base64')
   return {
     Authorization: `Basic ${authorization}`,
@@ -44,6 +45,7 @@ function getJiraAuthorizedHeader(): HeaderInit {
 
 export function getJiraApiUrlV3(path = '/'): string {
   const subdomain = process.env.JIRA_SUBDOMAIN
+  core.info(`subdomain ${subdomain}`)
   const url = `https://${subdomain}.atlassian.net/rest/api/3${path}`
   return url
 }
@@ -83,7 +85,7 @@ async function jiraApiSearch(
   try {
     const jql = `summary~"${params.summary}" AND labels="${params.label}" AND project=${params.projectKey} AND issuetype=${params.issueType}`
     const getUrl = `${getJiraSearchApiUrl()}?jql=${encodeURIComponent(jql)}`
-
+    core.info(`jql ${jql}`)
     const requestParams: RequestInit = {
       method: 'GET',
       headers: getJiraAuthorizedHeader()
@@ -98,6 +100,7 @@ async function jiraApiSearch(
       throw Error(message)
     }
   } catch (e) {
+    core.error('Error getting the existing issue')
     throw new Error('Error getting the existing issue')
   }
 }
