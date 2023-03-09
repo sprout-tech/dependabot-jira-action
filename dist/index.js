@@ -58,7 +58,7 @@ function getDependabotPullRequests(params) {
                 'X-GitHub-Api-Version': '2022-11-28'
             }
         });
-        core.debug(`pulls ${pulls}`);
+        core.debug(`pulls ${JSON.stringify(pulls)}`);
         const items = [];
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore

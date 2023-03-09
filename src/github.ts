@@ -34,7 +34,7 @@ export async function getDependabotPullRequests(
       }
     }
   )
-  core.debug(`pulls ${pulls}`)
+  core.debug(`pulls ${JSON.stringify(pulls)}`)
   const items = []
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
