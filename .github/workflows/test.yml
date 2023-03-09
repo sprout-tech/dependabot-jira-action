@@ -29,8 +29,8 @@ jobs:
           githubRepo: dependabot-jira-action
           githubOwner: sprout-tech
         env:
-          JIRA_SUBDOMAIN: $JIRA_SUBDOMAIN
-          JIRA_USER_EMAIL: $JIRA_USER_EMAIL
+          JIRA_SUBDOMAIN: "$JIRA_SUBDOMAIN"
+          JIRA_USER_EMAIL: "$JIRA_USER_EMAIL"
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
           GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
