@@ -42,8 +42,8 @@ export async function getDependabotPullRequests(
         url: pull.html_url,
         summary: `Dependabot alert - ${repo} - ${pull.title}`,
         description: pull.body,
-        repoName: pull.repo.name,
-        repoUrl: pull.repo.html_url,
+        repoName: pull.base.repo.name,
+        repoUrl: pull.base.repo.html_url,
         lastUpdatedAt: pull.updated_at
       }
       items.push(item)
