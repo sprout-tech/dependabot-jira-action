@@ -2,17 +2,25 @@ name: 'Dependabot JIRA Action'
 description: 'Creates JIRA issues from dependabot alerts'
 author: 'Sprout Tech LLC'
 inputs:
-  label:
+  jiraIssueLabel:
     required: true
     description: 'JIRA issue labels'
     default: "dependabot"
-  projectKey:
+  jiraProjectKey:
     required: true
     description: 'JIRA issue project key'
-  issueType:
+  jiraIssueType:
     required: true
     description: 'JIRA issue type'
     default: "Bug"
+  githubRepo:
+    required: true
+    description: 'Repo to look for dependabot pulls'
+    default: "repo-name"
+  githubOwner:
+    required: true
+    description: 'Owner of the repo'
+    default: "repo-name"
 runs:
-  using: 'node18'
+  using: 'node16'
   main: 'dist/index.js'
