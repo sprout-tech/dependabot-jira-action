@@ -1,7 +1,6 @@
 import {getOctokit} from '@actions/github'
 
 export interface GetPullRequestParams {
-  apiToken: string
   owner: string
   repo: string
 }
@@ -18,8 +17,9 @@ export interface PullRequestInfo {
 export async function getDependabotPullRequests(
   params: GetPullRequestParams
 ): Promise<PullRequestInfo[]> {
-  const {apiToken, owner, repo} = params
-  const octokit = getOctokit(apiToken)
+  const {owner, repo} = params
+  const githubApiKey = process.env.GITHUB_API_TOKEN || ''
+  const octokit = getOctokit(githubApiKey)
   const dependabotLoginName = 'dependabot[bot]'
   const pulls: unknown = await octokit.request(
     'GET /repos/{owner}/{repo}/pulls?state=open',
