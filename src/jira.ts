@@ -1,5 +1,10 @@
 import * as core from '@actions/core'
 import fetch, {HeaderInit, RequestInit, Response} from 'node-fetch'
+import {createIssueNumberString} from './actions'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import * as TurndownService from 'turndown'
+
 interface ApiPostParams {
   url: string
   data: object
@@ -115,7 +120,9 @@ export async function createJiraIssue({
   pullNumber
 }: CreateIssue): Promise<ApiRequestResponse> {
   core.debug(`Checking to create jira issue for pull`)
-  const jql = `summary~"${summary}" AND labels="${label}" AND project=${projectKey} AND issuetype=${issueType}`
+  const jql = `summary~"${summary}" AND description~=${createIssueNumberString(
+    pullNumber
+  )} AND labels="${label}" AND project=${projectKey} AND issuetype=${issueType}`
   const existingIssuesResponse = await jiraApiSearch({
     jql
   })
@@ -128,6 +135,8 @@ export async function createJiraIssue({
     return {data: existingIssuesResponse.issues[0]}
   }
   core.debug(`Did not find exising, trying create`)
+  const turndownService = new TurndownService()
+  const markdown = turndownService.turndown(description)
   const body = {
     fields: {
       labels: [label],
@@ -140,7 +149,7 @@ export async function createJiraIssue({
           {
             content: [
               {
-                text: description,
+                text: markdown,
                 type: 'text'
               }
             ],
@@ -185,7 +194,7 @@ export async function createJiraIssue({
           {
             content: [
               {
-                text: `PULL_NUMBER_${pullNumber}_PULL_NUMBER`,
+                text: createIssueNumberString(pullNumber),
                 type: 'text'
               }
             ],
