@@ -221,7 +221,8 @@ export async function createJiraIssue({
 export async function closeJiraIssue(
   issueId: string
 ): Promise<ApiRequestResponse> {
-  core.debug(`Checking to create jira issue for pull`)
+  core.debug(`Closing jira issue`)
+  core.debug(`issueId ${issueId}`)
   const body = {
     fields: {
       resolution: {
@@ -256,6 +257,6 @@ export async function closeJiraIssue(
     url: getJiraApiUrlV3(`/issue/${issueId}/transitions`),
     data: body
   })
-  core.debug(`Create issue success`)
+  core.debug(`Update issue success`)
   return {data}
 }

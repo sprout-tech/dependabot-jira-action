@@ -85,6 +85,7 @@ export async function syncJiraWithClosedDependabotPulls(
     ) {
       // Loop through issue that are not done and check if they are done in github
       for (const issue of existingIssuesResponse.issues) {
+        core.debug(`got issue ${JSON.stringify(issue)}`)
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         const issueNumber = extractIssueNumber(issue?.description)
