@@ -177,15 +177,24 @@ function getPullRequestByIssueId(params) {
         const { owner, repo, issueNumber } = params;
         const githubApiKey = process.env.GITHUB_API_TOKEN || '';
         const octokit = (0, github_1.getOctokit)(githubApiKey);
-        const { data } = yield octokit.request('GET /repos/{owner}/{repo}/pulls/{pull_number}', {
-            owner,
-            repo,
-            pull_number: Number(issueNumber),
-            headers: {
-                'X-GitHub-Api-Version': '2022-11-28'
-            }
-        });
-        return data;
+        try {
+            const { data } = yield octokit.request('GET /repos/{owner}/{repo}/pulls/{pull_number}', {
+                owner,
+                repo,
+                pull_number: Number(issueNumber),
+                headers: {
+                    'X-GitHub-Api-Version': '2022-11-28'
+                }
+            });
+            return data;
+        }
+        catch (e) {
+            return {
+                id: -1,
+                url: 'none',
+                state: 'none'
+            };
+        }
     });
 }
 exports.getPullRequestByIssueId = getPullRequestByIssueId;
