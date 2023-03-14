@@ -110,6 +110,7 @@ export async function syncJiraWithClosedDependabotPulls(
     )
     return 'success'
   } catch (e) {
+    core.debug(`ERROR ${JSON.stringify(e)}`)
     throw e
   }
 }
