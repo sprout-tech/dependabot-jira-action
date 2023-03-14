@@ -13,10 +13,7 @@ interface ApiRequestSearchResponse {
   issues: object[]
 }
 interface SearchIssue {
-  label: string
-  projectKey: string
-  summary: string
-  issueType: string
+  jql: string
 }
 
 export interface CreateIssue {
@@ -29,6 +26,7 @@ export interface CreateIssue {
   repoName: string
   repoUrl: string
   lastUpdatedAt: string
+  pullNumber: string
 }
 
 function getJiraAuthorizedHeader(): HeaderInit {
@@ -79,11 +77,10 @@ async function jiraApiPost(params: ApiPostParams): Promise<ApiRequestResponse> {
   }
 }
 
-async function jiraApiSearch(
-  params: SearchIssue
-): Promise<ApiRequestSearchResponse> {
+export async function jiraApiSearch({
+  jql
+}: SearchIssue): Promise<ApiRequestSearchResponse> {
   try {
-    const jql = `summary~"${params.summary}" AND labels="${params.label}" AND project=${params.projectKey} AND issuetype=${params.issueType}`
     const getUrl = `${getJiraSearchApiUrl()}?jql=${encodeURIComponent(jql)}`
     core.info(`jql ${jql}`)
     const requestParams: RequestInit = {
@@ -114,14 +111,13 @@ export async function createJiraIssue({
   repoName,
   repoUrl,
   url,
-  lastUpdatedAt
+  lastUpdatedAt,
+  pullNumber
 }: CreateIssue): Promise<ApiRequestResponse> {
   core.debug(`Checking to create jira issue for pull`)
+  const jql = `summary~"${summary}" AND labels="${label}" AND project=${projectKey} AND issuetype=${issueType}`
   const existingIssuesResponse = await jiraApiSearch({
-    summary,
-    label,
-    projectKey,
-    issueType
+    jql
   })
   if (
     existingIssuesResponse &&
@@ -185,6 +181,15 @@ export async function createJiraIssue({
               }
             ],
             type: 'paragraph'
+          },
+          {
+            content: [
+              {
+                text: `PULL_NUMBER_${pullNumber}_PULL_NUMBER`,
+                type: 'text'
+              }
+            ],
+            type: 'paragraph'
           }
         ],
         type: 'doc',
@@ -198,6 +203,48 @@ export async function createJiraIssue({
   }
   const data = await jiraApiPost({
     url: getJiraApiUrlV3('/issue'),
+    data: body
+  })
+  core.debug(`Create issue success`)
+  return {data}
+}
+
+export async function closeJiraIssue(
+  issueId: string
+): Promise<ApiRequestResponse> {
+  core.debug(`Checking to create jira issue for pull`)
+  const body = {
+    fields: {
+      resolution: {
+        name: 'Done'
+      }
+    },
+    update: {
+      comment: [
+        {
+          add: {
+            body: {
+              content: [
+                {
+                  content: [
+                    {
+                      text: 'Closed by dependabot',
+                      type: 'text'
+                    }
+                  ],
+                  type: 'paragraph'
+                }
+              ],
+              type: 'doc',
+              version: 1
+            }
+          }
+        }
+      ]
+    }
+  }
+  const data = await jiraApiPost({
+    url: getJiraApiUrlV3(`/issue/${issueId}/transitions`),
     data: body
   })
   core.debug(`Create issue success`)
