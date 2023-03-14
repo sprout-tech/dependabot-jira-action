@@ -99,7 +99,7 @@ function syncJiraWithClosedDependabotPulls(params) {
                     core.debug(`got issue ${JSON.stringify(issue)}`);
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-ignore
-                    const issueNumber = extractIssueNumber(issue === null || issue === void 0 ? void 0 : issue.description);
+                    const issueNumber = extractIssueNumber(issue.fields.description);
                     const pullRequest = yield (0, github_1.getPullRequestByIssueId)({
                         repo,
                         owner,
