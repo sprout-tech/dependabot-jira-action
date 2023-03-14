@@ -68,17 +68,24 @@ export async function getPullRequestByIssueId(
   const {owner, repo, issueNumber} = params
   const githubApiKey = process.env.GITHUB_API_TOKEN || ''
   const octokit = getOctokit(githubApiKey)
-  const {data} = await octokit.request(
-    'GET /repos/{owner}/{repo}/pulls/{pull_number}',
-    {
-      owner,
-      repo,
-      pull_number: Number(issueNumber),
-      headers: {
-        'X-GitHub-Api-Version': '2022-11-28'
+  try {
+    const {data} = await octokit.request(
+      'GET /repos/{owner}/{repo}/pulls/{pull_number}',
+      {
+        owner,
+        repo,
+        pull_number: Number(issueNumber),
+        headers: {
+          'X-GitHub-Api-Version': '2022-11-28'
+        }
       }
+    )
+    return data
+  } catch (e) {
+    return {
+      id: -1,
+      url: 'none',
+      state: 'none'
     }
-  )
-
-  return data
+  }
 }
