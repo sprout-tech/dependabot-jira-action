@@ -118,6 +118,7 @@ function syncJiraWithClosedDependabotPulls(params) {
             return 'success';
         }
         catch (e) {
+            core.debug(`ERROR ${JSON.stringify(e)}`);
             throw e;
         }
     });
