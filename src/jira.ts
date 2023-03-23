@@ -1,9 +1,7 @@
 import * as core from '@actions/core'
 import fetch, {HeaderInit, RequestInit, Response} from 'node-fetch'
 import {createIssueNumberString} from './actions'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import * as TurndownService from 'turndown'
+import TurndownService from 'turndown'
 
 interface ApiPostParams {
   url: string
@@ -32,6 +30,11 @@ export interface CreateIssue {
   repoUrl: string
   lastUpdatedAt: string
   pullNumber: string
+}
+
+export function htmlToMarkdown(html: string): string {
+  const turndownService = new TurndownService()
+  return turndownService.turndown(html)
 }
 
 function getJiraAuthorizedHeader(): HeaderInit {
@@ -135,8 +138,7 @@ export async function createJiraIssue({
     return {data: existingIssuesResponse.issues[0]}
   }
   core.debug(`Did not find exising, trying create`)
-  const turndownService = new TurndownService()
-  const markdown = turndownService.turndown(description)
+  const markdown = htmlToMarkdown(description)
   const body = {
     fields: {
       labels: [label],
