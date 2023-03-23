@@ -12,6 +12,7 @@ export interface SyncJiraOpen {
   label: string
   projectKey: string
   issueType: string
+  transitionDoneName?: string
 }
 
 function extractIssueNumber(description: string): string {
@@ -67,7 +68,8 @@ export async function syncJiraWithClosedDependabotPulls(
       'Sync jira with closed dependabot pulls starting',
       new Date().toTimeString()
     )
-    const {repo, owner, label, projectKey, issueType} = params
+    const {repo, owner, label, projectKey, issueType, transitionDoneName} =
+      params
 
     // First find all issues in jira that are not done
     const jql = `labels="${label}" AND project=${projectKey} AND issuetype=${issueType} AND status != Done`
@@ -99,7 +101,7 @@ export async function syncJiraWithClosedDependabotPulls(
           // If the github issue is closed then close the jira issue
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
-          await closeJiraIssue(issue.id)
+          await closeJiraIssue(issue.id, transitionDoneName)
         }
       }
     }
