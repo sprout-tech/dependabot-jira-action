@@ -275,13 +275,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.closeJiraIssue = exports.createJiraIssue = exports.jiraApiSearch = exports.getJiraSearchApiUrl = exports.getJiraApiUrlV3 = void 0;
+exports.closeJiraIssue = exports.createJiraIssue = exports.jiraApiSearch = exports.getJiraSearchApiUrl = exports.getJiraApiUrlV3 = exports.htmlToMarkdown = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const node_fetch_1 = __importDefault(__nccwpck_require__(467));
 const actions_1 = __nccwpck_require__(3623);
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-const TurndownService = __importStar(__nccwpck_require__(4800));
+const turndown_1 = __importDefault(__nccwpck_require__(4800));
+function htmlToMarkdown(html) {
+    const turndownService = new turndown_1.default();
+    return turndownService.turndown(html);
+}
+exports.htmlToMarkdown = htmlToMarkdown;
 function getJiraAuthorizedHeader() {
     const email = process.env.JIRA_USER_EMAIL;
     const token = process.env.JIRA_API_TOKEN;
@@ -373,8 +376,7 @@ function createJiraIssue({ label, projectKey, summary, description, issueType = 
             return { data: existingIssuesResponse.issues[0] };
         }
         core.debug(`Did not find exising, trying create`);
-        const turndownService = new TurndownService();
-        const markdown = turndownService.turndown(description);
+        const markdown = htmlToMarkdown(description);
         const body = {
             fields: {
                 labels: [label],
