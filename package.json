@@ -29,7 +29,7 @@
     "@actions/github": "^5.1.1",
     "@types/node-fetch": "^2.6.2",
     "@types/turndown": "^5.0.1",
-    "turndown": "^7.1.1"
+    "turndown": "^7.1.2"
   },
   "devDependencies": {
     "@types/node": "^18.15.3",
