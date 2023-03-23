@@ -457,15 +457,13 @@ function createJiraIssue({ label, projectKey, summary, description, issueType = 
     });
 }
 exports.createJiraIssue = createJiraIssue;
-function closeJiraIssue(issueId) {
+function closeJiraIssue(issueId, transitionName = 'done') {
     return __awaiter(this, void 0, void 0, function* () {
         core.debug(`Closing jira issue`);
         core.debug(`issueId ${issueId}`);
         const body = {
-            fields: {
-                resolution: {
-                    name: 'Done'
-                }
+            transition: {
+                id: -1
             },
             update: {
                 comment: [
@@ -491,12 +489,51 @@ function closeJiraIssue(issueId) {
                 ]
             }
         };
-        const data = yield jiraApiPost({
-            url: getJiraApiUrlV3(`/issue/${issueId}/transitions`),
-            data: body
+        const transitionsResponse = yield (0, node_fetch_1.default)(getJiraApiUrlV3(`/issue/${issueId}/transitions`), {
+            method: 'GET',
+            headers: getJiraAuthorizedHeader()
         });
-        core.debug(`Update issue success`);
-        return { data };
+        if (transitionsResponse.status === 200) {
+            const transitionsData = yield transitionsResponse.json();
+            const transition = transitionsData.transitions.find((item) => {
+                if (item.name.toLowerCase() === transitionName.toLowerCase()) {
+                    return item;
+                }
+            });
+            body.transition.id = transition.id;
+            const updateIssueResponse = yield (0, node_fetch_1.default)(getJiraApiUrlV3(`/issue/${issueId}/transitions`), {
+                body: JSON.stringify(body),
+                headers: getJiraAuthorizedHeader(),
+                method: 'POST'
+            });
+            if (updateIssueResponse.status === 204) {
+                return {
+                    data: {
+                        success: true
+                    }
+                };
+            }
+            else {
+                try {
+                    const error = yield updateIssueResponse.json();
+                    core.error(error);
+                }
+                catch (e) {
+                    core.error('error in updateIssueResponse.json()');
+                }
+                throw new Error('Failed to update issue');
+            }
+        }
+        else {
+            try {
+                const error = yield transitionsResponse.json();
+                core.error(error);
+            }
+            catch (e) {
+                core.error('error in transitionsResponse.json()');
+            }
+            throw new Error('Failed get transition id');
+        }
     });
 }
 exports.closeJiraIssue = closeJiraIssue;
