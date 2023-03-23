@@ -84,7 +84,7 @@ function syncJiraWithClosedDependabotPulls(params) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             core.setOutput('Sync jira with closed dependabot pulls starting', new Date().toTimeString());
-            const { repo, owner, label, projectKey, issueType } = params;
+            const { repo, owner, label, projectKey, issueType, transitionDoneName } = params;
             // First find all issues in jira that are not done
             const jql = `labels="${label}" AND project=${projectKey} AND issuetype=${issueType} AND status != Done`;
             const existingIssuesResponse = yield (0, jira_1.jiraApiSearch)({
@@ -110,7 +110,7 @@ function syncJiraWithClosedDependabotPulls(params) {
                         // If the github issue is closed then close the jira issue
                         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         // @ts-ignore
-                        yield (0, jira_1.closeJiraIssue)(issue.id);
+                        yield (0, jira_1.closeJiraIssue)(issue.id, transitionDoneName);
                     }
                 }
             }
