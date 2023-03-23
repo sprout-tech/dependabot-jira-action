@@ -219,15 +219,14 @@ export async function createJiraIssue({
 }
 
 export async function closeJiraIssue(
-  issueId: string
+  issueId: string,
+  transitionName = 'done'
 ): Promise<ApiRequestResponse> {
   core.debug(`Closing jira issue`)
   core.debug(`issueId ${issueId}`)
   const body = {
-    fields: {
-      resolution: {
-        name: 'Done'
-      }
+    transition: {
+      id: -1
     },
     update: {
       comment: [
@@ -253,10 +252,54 @@ export async function closeJiraIssue(
       ]
     }
   }
-  const data = await jiraApiPost({
-    url: getJiraApiUrlV3(`/issue/${issueId}/transitions`),
-    data: body
-  })
-  core.debug(`Update issue success`)
-  return {data}
+
+  const transitionsResponse = await fetch(
+    getJiraApiUrlV3(`/issue/${issueId}/transitions`),
+    {
+      method: 'GET',
+      headers: getJiraAuthorizedHeader()
+    }
+  )
+  if (transitionsResponse.status === 200) {
+    const transitionsData = await transitionsResponse.json()
+    const transition = transitionsData.transitions.find(
+      (item: {name: string}) => {
+        if (item.name.toLowerCase() === transitionName.toLowerCase()) {
+          return item
+        }
+      }
+    )
+    body.transition.id = transition.id
+    const updateIssueResponse = await fetch(
+      getJiraApiUrlV3(`/issue/${issueId}/transitions`),
+      {
+        body: JSON.stringify(body),
+        headers: getJiraAuthorizedHeader(),
+        method: 'POST'
+      }
+    )
+    if (updateIssueResponse.status === 204) {
+      return {
+        data: {
+          success: true
+        }
+      }
+    } else {
+      try {
+        const error = await updateIssueResponse.json()
+        core.error(error)
+      } catch (e) {
+        core.error('error in updateIssueResponse.json()')
+      }
+      throw new Error('Failed to update issue')
+    }
+  } else {
+    try {
+      const error = await transitionsResponse.json()
+      core.error(error)
+    } catch (e) {
+      core.error('error in transitionsResponse.json()')
+    }
+    throw new Error('Failed get transition id')
+  }
 }
