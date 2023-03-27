@@ -8,21 +8,29 @@ Use this github action to create Jira issue from the dependabot pull requests cr
 See [action.yml](action.yml)
 
 ```yaml
-permissions:
-  pull-requests: read
-steps:
-  - uses: sprout-tech/dependabot-jira-action@v1.0.3
-    with:
-      jiraIssueLabel: dependabot
-      jiraProjectKey: TGA
-      jiraIssueType: Bug
-      githubRepo: dependabot-jira-action
-      githubOwner: sprout-tech
-    environment:
-      JIRA_SUBDOMAIN: ${{ env.JIRA_SUBDOMAIN }}
-      JIRA_USER_EMAIL: ${{ env.JIRA_USER_EMAIL }}
-      JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-      GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+name: Update JIRA with dependabot issues
+on:
+  schedule:
+    - cron: '0 */8 * * *'
+jobs:
+  jira:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    steps:
+      - name: Dependabot JIRA Action
+        uses: sprout-tech/dependabot-jira-action@v1.2.1
+        with:
+          jiraIssueLabel: dependabot
+          jiraProjectKey: TGA
+          jiraIssueType: Bug
+          githubRepo: dependabot-jira-action
+          githubOwner: sprout-tech
+        env:
+          JIRA_SUBDOMAIN: ${{ secrets.JIRA_SUBDOMAIN }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          GITHUB_API_TOKEN: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
 ```
 
 # License
