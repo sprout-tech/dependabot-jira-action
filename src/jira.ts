@@ -1,7 +1,6 @@
 import * as core from '@actions/core'
 import fetch, {HeaderInit, RequestInit, Response} from 'node-fetch'
 import {createIssueNumberString} from './actions'
-import TurndownService from 'turndown'
 
 interface ApiPostParams {
   url: string
@@ -30,11 +29,6 @@ export interface CreateIssue {
   repoUrl: string
   lastUpdatedAt: string
   pullNumber: string
-}
-
-export function htmlToMarkdown(html: string): string {
-  const turndownService = new TurndownService()
-  return turndownService.turndown(html)
 }
 
 function getJiraAuthorizedHeader(): HeaderInit {
@@ -114,7 +108,6 @@ export async function createJiraIssue({
   label,
   projectKey,
   summary,
-  description,
   issueType = 'Bug',
   repoName,
   repoUrl,
@@ -138,7 +131,6 @@ export async function createJiraIssue({
     return {data: existingIssuesResponse.issues[0]}
   }
   core.debug(`Did not find exising, trying create`)
-  const markdown = htmlToMarkdown(description)
   const body = {
     fields: {
       labels: [label],
@@ -148,15 +140,6 @@ export async function createJiraIssue({
       summary,
       description: {
         content: [
-          {
-            content: [
-              {
-                text: markdown,
-                type: 'text'
-              }
-            ],
-            type: 'paragraph'
-          },
           {
             content: [
               {

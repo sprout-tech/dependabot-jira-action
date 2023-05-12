@@ -55,7 +55,7 @@ export async function getDependabotOpenPullRequests(
         repoName: pull.base.repo.name,
         repoUrl: pull.base.repo.html_url.replace('***', owner),
         lastUpdatedAt: pull.updated_at,
-        pullNumber: pull.number
+        pullNumber: pull.number.toString()
       }
       items.push(item)
     }

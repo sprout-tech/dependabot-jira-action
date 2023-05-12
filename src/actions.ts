@@ -15,7 +15,7 @@ export interface SyncJiraOpen {
   transitionDoneName?: string
 }
 
-function extractIssueNumber(description: string): string {
+export function extractIssueNumber(description: string): string {
   const issueNumberRegex = /PULL_NUMBER_(.*)_PULL_NUMBER/g
   const parts = issueNumberRegex.exec(description)
   if (parts && parts.length > 1) {
