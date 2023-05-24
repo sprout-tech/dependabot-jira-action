@@ -115,7 +115,6 @@ export async function createJiraIssue({
   lastUpdatedAt,
   pullNumber
 }: CreateIssue): Promise<ApiRequestResponse> {
-  core.debug(`Checking to create jira issue for pull`)
   const jql = `summary~"${summary}" AND description~"${createIssueNumberString(
     pullNumber
   )}" AND labels="${label}" AND project="${projectKey}" AND issuetype="${issueType}"`
@@ -208,7 +207,6 @@ export async function closeJiraIssue(
   transitionName = 'done'
 ): Promise<ApiRequestResponse> {
   core.debug(`Closing jira issue`)
-  core.debug(`issueId ${issueId}`)
   const body = {
     transition: {
       id: -1

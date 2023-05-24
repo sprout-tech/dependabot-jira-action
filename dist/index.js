@@ -91,13 +91,11 @@ function syncJiraWithClosedDependabotPulls(params) {
             const existingIssuesResponse = yield (0, jira_1.jiraApiSearch)({
                 jql
             });
-            core.debug(`existingIssuesResponse ${JSON.stringify(existingIssuesResponse)}`);
             if (existingIssuesResponse &&
                 existingIssuesResponse.issues &&
                 existingIssuesResponse.issues.length > 0) {
                 // Loop through issue that are not done and check if they are done in github
                 for (const issue of existingIssuesResponse.issues) {
-                    core.debug(`got issue ${JSON.stringify(issue)}`);
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-ignore
                     const issueNumber = extractIssueNumber(issue.fields.description);
@@ -106,7 +104,6 @@ function syncJiraWithClosedDependabotPulls(params) {
                         owner,
                         issueNumber
                     });
-                    core.debug(`pullRequest ${JSON.stringify(pullRequest)}`);
                     if (pullRequest.state === 'closed') {
                         // If the github issue is closed then close the jira issue
                         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -134,29 +131,6 @@ exports.syncJiraWithClosedDependabotPulls = syncJiraWithClosedDependabotPulls;
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -169,7 +143,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getPullRequestByIssueId = exports.getDependabotOpenPullRequests = void 0;
 const github_1 = __nccwpck_require__(5438);
-const core = __importStar(__nccwpck_require__(2186));
 function getDependabotOpenPullRequests(params) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
@@ -206,7 +179,6 @@ exports.getDependabotOpenPullRequests = getDependabotOpenPullRequests;
 function getPullRequestByIssueId(params) {
     return __awaiter(this, void 0, void 0, function* () {
         const { owner, repo, issueNumber } = params;
-        core.debug(`getPullRequestByIssueId, issueNumber ${issueNumber}`);
         const githubApiKey = process.env.GITHUB_API_TOKEN || '';
         const octokit = (0, github_1.getOctokit)(githubApiKey);
         try {
@@ -218,7 +190,6 @@ function getPullRequestByIssueId(params) {
                     'X-GitHub-Api-Version': '2022-11-28'
                 }
             });
-            core.debug(`/repos/{owner}/{repo}/pulls/{pull_number} ${JSON.stringify(data)}`);
             return data;
         }
         catch (e) {
@@ -359,7 +330,6 @@ function jiraApiSearch({ jql }) {
 exports.jiraApiSearch = jiraApiSearch;
 function createJiraIssue({ label, projectKey, summary, issueType = 'Bug', repoName, repoUrl, url, lastUpdatedAt, pullNumber }) {
     return __awaiter(this, void 0, void 0, function* () {
-        core.debug(`Checking to create jira issue for pull`);
         const jql = `summary~"${summary}" AND description~"${(0, actions_1.createIssueNumberString)(pullNumber)}" AND labels="${label}" AND project="${projectKey}" AND issuetype="${issueType}"`;
         const existingIssuesResponse = yield jiraApiSearch({
             jql
@@ -447,7 +417,6 @@ exports.createJiraIssue = createJiraIssue;
 function closeJiraIssue(issueId, transitionName = 'done') {
     return __awaiter(this, void 0, void 0, function* () {
         core.debug(`Closing jira issue`);
-        core.debug(`issueId ${issueId}`);
         const body = {
             transition: {
                 id: -1

@@ -1,5 +1,4 @@
 import {getOctokit} from '@actions/github'
-import * as core from '@actions/core'
 
 export interface GetPullRequestParams {
   owner: string
@@ -67,7 +66,6 @@ export async function getPullRequestByIssueId(
   params: GetPullRequestByIdParams
 ): Promise<GetPullRequestByIdResponse> {
   const {owner, repo, issueNumber} = params
-  core.debug(`getPullRequestByIssueId, issueNumber ${issueNumber}`)
   const githubApiKey = process.env.GITHUB_API_TOKEN || ''
   const octokit = getOctokit(githubApiKey)
   try {
@@ -81,9 +79,6 @@ export async function getPullRequestByIssueId(
           'X-GitHub-Api-Version': '2022-11-28'
         }
       }
-    )
-    core.debug(
-      `/repos/{owner}/{repo}/pulls/{pull_number} ${JSON.stringify(data)}`
     )
     return data
   } catch (e) {
