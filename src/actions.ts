@@ -15,7 +15,7 @@ export interface SyncJiraOpen {
   transitionDoneName?: string
 }
 
-function extractIssueNumber(description: string): string {
+export function extractIssueNumber(description: string): string {
   const issueNumberRegex = /PULL_NUMBER_(.*)_PULL_NUMBER/g
   const parts = issueNumberRegex.exec(description)
   if (parts && parts.length > 1) {
@@ -77,9 +77,6 @@ export async function syncJiraWithClosedDependabotPulls(
       jql
     })
 
-    core.debug(
-      `existingIssuesResponse ${JSON.stringify(existingIssuesResponse)}`
-    )
     if (
       existingIssuesResponse &&
       existingIssuesResponse.issues &&
@@ -87,7 +84,6 @@ export async function syncJiraWithClosedDependabotPulls(
     ) {
       // Loop through issue that are not done and check if they are done in github
       for (const issue of existingIssuesResponse.issues) {
-        core.debug(`got issue ${JSON.stringify(issue)}`)
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         const issueNumber = extractIssueNumber(issue.fields.description)
@@ -96,7 +92,6 @@ export async function syncJiraWithClosedDependabotPulls(
           owner,
           issueNumber
         })
-        core.debug(`pullRequest ${JSON.stringify(pullRequest)}`)
         if (pullRequest.state === 'closed') {
           // If the github issue is closed then close the jira issue
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment

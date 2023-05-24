@@ -1,6 +1,7 @@
 import * as process from 'process'
 import {expect, test} from '@jest/globals'
-import {getJiraApiUrlV3, getJiraSearchApiUrl, htmlToMarkdown} from '../src/jira'
+import {getJiraApiUrlV3, getJiraSearchApiUrl} from '../src/jira'
+import {createIssueNumberString, extractIssueNumber} from '../src/actions'
 
 test('test create jira api url', async () => {
   const subdomain = 'test-domain'
@@ -19,8 +20,11 @@ test('test create jira search url', async () => {
   )
 })
 
-test('test html to markdown', async () => {
-  const html = '<h1>Hello world!</h1>'
-  const markdown = htmlToMarkdown(html)
-  expect(markdown).toEqual('Hello world!\n' + '============')
+test('extra issue number from description', async () => {
+  const issueNumber = '42'
+  const issueNumberString = createIssueNumberString(issueNumber.toString())
+  const issueNumberExtracted = extractIssueNumber(`
+    ${issueNumberString}
+  `)
+  expect(issueNumberExtracted).toEqual(issueNumber)
 })
