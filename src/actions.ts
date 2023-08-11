@@ -72,7 +72,7 @@ export async function syncJiraWithClosedDependabotPulls(
       params
 
     // First find all issues in jira that are not done
-    const jql = `labels="${label}" AND project=${projectKey} AND issuetype=${issueType} AND status != Done`
+    const jql = `labels="${label}" AND project=${projectKey} AND issuetype="${issueType}" AND status != Done`
     const existingIssuesResponse = await jiraApiSearch({
       jql
     })
